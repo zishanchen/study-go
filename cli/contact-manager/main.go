@@ -8,52 +8,48 @@ import (
 )
 
 func readInput(reader *bufio.Reader, prompt string) string {
-	for {
-		fmt.Print(prompt)
+	fmt.Print(prompt)
 
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("Error reading input.")
-			continue
-		}
-
-		input = strings.TrimSpace(input)
-
-		if input == "" {
-			fmt.Println("Input cannot be empty.")
-			continue
-		}
-
-		return input
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return ""
 	}
+
+	return strings.TrimSpace(input)
 }
 
-func addContact(reader *bufio.Reader, contacts []Contact) []Contact {
+func handleAddContact(
+	reader *bufio.Reader,
+	contacts []Contact,
+) []Contact {
 	fmt.Println("\n--- Add Contact ---")
 
 	name := readInput(reader, "Name: ")
 	email := readInput(reader, "Email: ")
 	phone := readInput(reader, "Phone: ")
 
-	contact := Contact{
-		Name:  name,
-		Email: email,
-		Phone: phone,
+	updatedContacts, err := addContact(
+		contacts,
+		name,
+		email,
+		phone,
+	)
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		return contacts
 	}
 
-	contacts = append(contacts, contact)
+	fmt.Println("Contact added successfully.")
 
-	fmt.Println("Contact added successfully!")
-
-	return contacts
-
+	return updatedContacts
 }
 
 func listContacts(contacts []Contact) {
 	fmt.Println("\n--- Contact List ---")
 
 	if len(contacts) == 0 {
-		fmt.Println("No contacts found")
+		fmt.Println("No contacts found.")
 		return
 	}
 
@@ -62,7 +58,10 @@ func listContacts(contacts []Contact) {
 	}
 }
 
-func searchContact(reader *bufio.Reader, contacts []Contact) {
+func handleFindContact(
+	reader *bufio.Reader,
+	contacts []Contact,
+) {
 	fmt.Println("\n--- Find Contact ---")
 
 	name := readInput(reader, "Enter name: ")
@@ -70,7 +69,7 @@ func searchContact(reader *bufio.Reader, contacts []Contact) {
 	contact, err := findContact(contacts, name)
 
 	if err != nil {
-		fmt.Printf("Errpr:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
@@ -98,13 +97,13 @@ func main() {
 
 		switch choice {
 		case "1":
-			contacts = addContact(reader, contacts)
+			contacts = handleAddContact(reader, contacts)
 
 		case "2":
 			listContacts(contacts)
 
 		case "3":
-			searchContact(reader, contacts)
+			handleFindContact(reader, contacts)
 
 		case "4":
 			fmt.Println("Goodbye!")
