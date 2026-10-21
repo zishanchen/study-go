@@ -1,0 +1,8 @@
+INFO application started
+INFO user logged in
+WARN disk usage high
+ERROR failed to connect to database
+INFO retrying connection
+ERROR failed to connect to database
+WARN disk usage high
+INFO application stopped
